@@ -13,7 +13,8 @@ object Main2 extends App {
 
 }
 
-object Chapter2 extends App {
-
+object MainChapter2 extends App {
+  val m = new Chapter2
+  m.isSorted(Array(1,2,3), (x: Int, y: Int) => x <= y)
 }
 
