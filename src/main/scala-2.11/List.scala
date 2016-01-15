@@ -60,4 +60,54 @@ object List {
     case Cons(_, Nil) => Nil
     case Cons(x, xs) => Cons(x, init(xs))
   }
+
+  def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B = as match {
+    case Nil => z
+    case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+  }
+
+  def sum2(ns: List[Int]) = foldRight(ns, 0)((x,y) => x + y)
+
+  def product2(ns: List[Double]) = foldRight(ns, 1.0)(_ * _)
+
+  def length[A](as: List[A]): Int = foldRight[A, Int](as, 0)((_,y) => y + 1)
+
+  def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B = {
+    @annotation.tailrec
+    def foldl(xs: List[A], acc: B): B = xs match {
+      case Nil => acc
+      case Cons(x, xs) => foldl(xs, f(acc, x))
+    }
+    foldl(as, z)
+  }
+
+  def sumLeft(ns: List[Int]) = foldLeft(ns, 0)(_ + _)
+  def productLeft(ns: List[Double]) = foldLeft(ns, 1.0)(_ * _)
+  def lengthLeft[A](ns: List[A]): Int = foldLeft[A, Int](ns, 0)((y,_) => y + 1)
+
+  def reverseList[A](ns: List[A]) = foldLeft(ns, Nil:List[A])((b, a) => Cons(a, b))
+
+  def append[A](as: List[A], bs: List[A]) = foldRight(as, bs)(Cons(_,_))
+
+  def flattenLists[A](ls: List[List[A]]): List[A] = foldLeft(ls, Nil:List[A])((x,y) => append(x,y)) // (append(_,_)) but scala complained
+
+//  def curry[A,B,C](f: (A, B) => C): A => (B => C) =
+//    (a: A) => (b: B) => f(a, b)
+
+//  def foldRightOn[A,B](as: List[A], z: B)(f: (A, B) => B): B = foldLeft(as, z)((xs, x) => curry[A,B,B](f(x, xs)))
+
+  // List.map(List(1,2,3))(_*2)
+  def map[A,B](as: List[A])(f: A => B): List[B] = foldRight(as, Nil:List[B])((x,y) => Cons(f(x), y))
+
+  // List.filter(List(1,2,3,1,5,6,7,1,9))(_!=1)
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = as match {
+    case Nil => Nil
+    case Cons(x, xs) =>
+      if (f(x)) Cons(x, filter(xs)(f))
+      else filter(xs)(f)
+  }
+
+  // flatMap(List(1,2,3))(i => List(i,i))
+  def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] = flattenLists(foldLeft(as, Nil:List[List[B]])((b,a) => Cons(f(a), b)))
+
 }
