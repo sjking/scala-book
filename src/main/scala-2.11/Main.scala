@@ -15,6 +15,13 @@ object Main2 extends App {
 
 object MainChapter2 extends App {
   val m = new Chapter2
-  m.isSorted(Array(1,2,3), (x: Int, y: Int) => x <= y)
+  val ord = (x: Int, y: Int) => x <= y
+  val a = m.isSorted(Array(1,2,3), ord)
+  val b = m.isSorted(Array(3,2,1), ord)
+  println("is sorted")
+  println(a, b)
+
+  println("Find first")
+  m.findFirst(Array(7,9,13), (x: Int) => x == 9)
 }
 
